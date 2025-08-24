@@ -1,0 +1,140 @@
+<template>
+  <div id="app">
+    <!-- Loader Overlay -->
+    <div v-if="loading" class="loader-overlay" :class="{ fadeIn: fadeIn }">
+      <video class="loader-video" src="./assets/loader2.mp4" autoplay muted playsinline @ended="hideLoader"></video>
+    </div>
+
+    <!-- Main App Content -->
+    <div v-show="!loading">
+      <!-- Navbar -->
+      <NavbarComp v-if="!['Login', 'Register'].includes($route.name)" :user="user" @logout="handleLogout"
+        @open-cart="openCartModal" />
+
+      <!-- Main Content -->
+      <router-view />
+
+      <!-- Cart Modal -->
+      <CartModal ref="cartModal" />
+    </div>
+  </div>
+</template>
+
+<script>
+import NavbarComp from './components/NavbarComp.vue';
+import CartModal from './components/CartModul.vue';
+import { mapState, mapActions } from 'vuex';
+import * as bootstrap from 'bootstrap';
+import axios from 'axios';
+import router from './router';
+
+export default {
+  components: { NavbarComp, CartModal },
+  data() {
+    return {
+      loading: false,
+      fadeIn: false,
+    };
+  },
+  computed: {
+    ...mapState(['user']),
+  },
+  methods: {
+    ...mapActions(['logout']),
+
+    handleLogout() {
+      this.logout();
+      this.$router.push('/login');
+    },
+
+    openCartModal() {
+      const modalEl = this.$refs.cartModal.$el;
+      let modal = bootstrap.Modal.getInstance(modalEl);
+      if (!modal) modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    },
+
+    hideLoader() {
+      this.fadeIn = false; // start fade-out
+      setTimeout(() => {
+        this.loading = false; // now show main content
+      }, 800); // match CSS transition
+    },
+  },
+  mounted() {
+    // Show loader only once per session
+    if (!sessionStorage.getItem('loaderShown')) {
+      this.loading = true;
+      sessionStorage.setItem('loaderShown', 'true');
+
+      // Trigger fade-in after DOM renders
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.fadeIn = true;
+        }, 50);
+      });
+    }
+
+    // Handle session expiration
+    axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response) {
+          const { status, data } = error.response;
+          if (status === 401 && data.message?.toLowerCase().includes('session')) {
+            alert('Your session has expired. Please log in again.');
+            localStorage.removeItem('user');
+            this.$store.commit('setUser', null);
+            router.push('/login');
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+  },
+};
+</script>
+
+<style scoped>
+/* Loader Styles */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  /* fallback background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  overflow: hidden;
+}
+
+.loader-overlay.fadeIn {
+  opacity: 1;
+}
+
+.loader-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 98.5vh;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+/* Optional: fade-slide for alerts */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 1s ease;
+}
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>
