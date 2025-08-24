@@ -70,7 +70,7 @@ Follow these steps to set up the project locally:
 
 ### 1️⃣ Clone the Repository  
 ```bash
-git clone [Module 3 E-Commerce Project](https://github.com/kxngzero329/M3_Project_Module_E-Commerce_Mogamat_Ay-yoob_Sipho_Laila_Atang.git)
+git clone (https://github.com/kxngzero329/M3_Project_Module_E-Commerce_Mogamat_Ay-yoob_Sipho_Laila_Atang.git)
 cd fashion-hub
 ```
 
