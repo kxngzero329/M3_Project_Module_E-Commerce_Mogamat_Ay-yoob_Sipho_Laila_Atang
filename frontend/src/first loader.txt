@@ -1,0 +1,215 @@
+<template>
+  <div id="app">
+        <!-- Session Expired Alert -->
+    <transition name="fade-slide">
+      <div v-if="showSessionAlert" class="alert-box">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ alertMessage }}</span>
+        <button class="close-btn" @click="closeAlert">&times;</button>
+      </div>
+    </transition>
+
+    <!-- Navbar -->
+    <NavbarComp v-if="!['Login', 'Register'].includes($route.name)" :user="user" @logout="handleLogout"
+      @open-cart="openCartModal" />
+
+
+    <!-- Loader Overlay -->
+    <div v-if="loading" class="loader-overlay">
+      <h1 class="loader-text">
+        <span v-for="(char, index) in brandName" :key="index" class="letter"
+          :style="{ animationDelay: `${index * 0.1}s` }">
+          {{ char }}
+        </span>
+      </h1>
+      <p class="loader-slogan">Unleash Your Style</p>
+    </div>
+
+    <!-- Main Content -->
+    <router-view v-else />
+
+    <!-- Cart Modal -->
+    <CartModal ref="cartModal" />
+  </div>
+</template>
+
+<script>
+import NavbarComp from './components/NavbarComp.vue';
+import CartModal from './components/CartModul.vue';
+import { mapState, mapActions } from 'vuex';
+import * as bootstrap from 'bootstrap';
+import axios from 'axios';
+import router from './router'; // make sure you import your router instance
+
+export default {
+  components: { NavbarComp, CartModal },
+  data() {
+    return {
+      loading: false, // start as false
+      brandName: 'FASHIONHUB'.split(''),
+    };
+  },
+  computed: {
+    ...mapState(['user']),
+  },
+  methods: {
+    ...mapActions(['logout']),
+
+    handleLogout() {
+      this.logout();
+      this.$router.push('/login');
+    },
+
+    openCartModal() {
+      const modalEl = this.$refs.cartModal.$el;
+      let modal = bootstrap.Modal.getInstance(modalEl);
+      if (!modal) modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    },
+  },
+  mounted() {
+    // Show loader only if not already shown in this session
+    if (!sessionStorage.getItem('loaderShown')) {
+      this.loading = true;
+      sessionStorage.setItem('loaderShown', 'true');
+
+      setTimeout(() => {
+        const loader = document.querySelector('.loader-overlay');
+        if (loader) {
+          loader.style.opacity = 0;
+          loader.style.transition = 'opacity 0.6s ease';
+          setTimeout(() => (this.loading = false), 600);
+        }
+      }, 3500);
+    }
+
+    // handle when the token of the user's session expires
+    axios.interceptors.response.use(
+      response => response, // pass through successful responses
+      error => {
+        if (error.response) {
+          const { status, data } = error.response;
+
+          if (status === 401 && data.message?.toLowerCase().includes('session')) {
+            alert('Your session has expired. Please log in again.');
+            localStorage.removeItem('user'); // remove stored user
+            this.$store.commit('setUser', null); // clear Vuex user state
+            router.push('/login');
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+  },
+};
+</script>
+
+
+<style scoped>
+/* Loader Styles */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f9f9ff, #f3f4ff);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-text {
+  font-size: 2.5rem;
+  font-weight: 800;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.15em;
+  display: flex;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+.letter {
+  opacity: 0;
+  transform: translateY(20px);
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: bounceIn 0.6s forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.letter::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+  to {
+    left: 100%;
+  }
+}
+
+@keyframes bounceIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loader-slogan {
+  font-size: 1rem;
+  margin-top: 1rem;
+  color: #777;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: fadeIn 1.2s 1.5s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@font-face {
+  font-family: FontInter;
+  src: url(../src/assets/fonts/Inter-VariableFont_opsz\,wght.ttf);
+}
+
+
+</style>
+
+
+
+
+filter bar
+
+<div class="PriceRangeFilter">
+            <label>Min: R{{ minPrice }}</label>
+            <input type="range" min="0" max="15000" step="5" v-model.number="minPrice" @change="applyPrice" />
+            <label>Max: R{{ maxPrice }}</label>
+            <input type="range" min="0" max="15000" step="5" v-model.number="maxPrice" @change="applyPrice" />
+          </div>
