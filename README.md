@@ -113,11 +113,6 @@ nodemon server.js
 
 ---
 
-## 📷 Screenshots (Optional)  
-*(Add images of your UI here for a more visual README.)*  
-
----
-
 ## 📌 Notes  
 
 - Session tokens expire every **15 minutes**.  
