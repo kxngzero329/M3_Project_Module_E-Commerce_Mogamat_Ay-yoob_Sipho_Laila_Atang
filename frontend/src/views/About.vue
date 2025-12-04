@@ -326,7 +326,7 @@ export default {
             team: [
                 { id: 1, name: "Zuhayr Smith", role: "Creative Director", image: 'https://ca.slack-edge.com/T02LW4RMXJQ-U08NBS2GBK6-d6f2b6181e78-192' },
                 { id: 2, name: "Ayyoob Dawood", role: "Head of Marketing", image: 'https://ca.slack-edge.com/T02LW4RMXJQ-U08PL2230KE-141767e93e4e-192' },
-                { id: 3, name: "Laila Abdurahman", role: "Lead Designer", image: 'https://ca.slack-edge.com/T02LW4RMXJQ-U08NKGD0UG1-c6b72d06d82f-512' },
+                { id: 3, name: "Laila Abdurahman", role: "Lead Designer", image: 'https://ca.slack-edge.com/T02LW4RMXJQ-U08NBS330Q4-788fd63c1db1-192' },
                 { id: 4, name: "Atang Makara", role: "Operations Manager", image: 'https://ca.slack-edge.com/T02LW4RMXJQ-U08NKGD0UG1-6aaa31cb3248-192' },
                 { id: 5, name: "Sipho Gcilishe", role: "Fashion Curator", image: 'https://ca.slack-edge.com/T02LW4RMXJQ-U08NBS1J5PE-7bf943ee310d-512' },
             ],
