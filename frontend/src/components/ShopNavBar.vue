@@ -1,27 +1,43 @@
 <template>
   <header class="header">
     <div class="introText">Browse options:</div>
-    <div class="center-container">
+    <div class="mobile-top-bar">
+      <!-- Mobile menu toggle for categories -->
+      <button class="menu-toggle-mobile" @click="showMobileMenu = !showMobileMenu" :class="{ active: showMobileMenu }">
+        <i class="bi" :class="showMobileMenu ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+      </button>
+      <!-- Filter Button (Mobile only) -->
+      <button class="filter-btn-mobile" @click="toggleFilter" :class="{ active: isFilterOpen }">
+        <i class="bi bi-funnel"></i>
+        Filter
+      </button>
+    </div>
+    <div class="center-container" :class="{ show: showMobileMenu }">
       <nav class="nav-links">
         <router-link
           :to="{ path: '/shop', query: { category: 'all' } }"
           :class="{ active: currentCategory === 'all' }"
+          @click="showMobileMenu = false"
         >All</router-link>
         <router-link
           :to="{ path: '/shop', query: { category: 'tops' } }"
           :class="{ active: currentCategory === 'tops' }"
+          @click="showMobileMenu = false"
         >Tops</router-link>
         <router-link
           :to="{ path: '/shop', query: { category: 'bottoms' } }"
           :class="{ active: currentCategory === 'bottoms' }"
+          @click="showMobileMenu = false"
         >Bottoms</router-link>
         <router-link
           :to="{ path: '/shop', query: { category: 'sneakers' } }"
           :class="{ active: currentCategory === 'sneakers' }"
+          @click="showMobileMenu = false"
         >Sneakers</router-link>
         <router-link
           :to="{ path: '/shop', query: { category: 'accessories' } }"
           :class="{ active: currentCategory === 'accessories' }"
+          @click="showMobileMenu = false"
         >Accessories</router-link>
       </nav>
     </div>
@@ -31,20 +47,32 @@
 <script>
 export default {
   name: "ShopNavBar",
+  props: {
+    isFilterOpen: Boolean,
+  },
+  data() {
+    return {
+      showMobileMenu: false,
+    };
+  },
   computed: {
     currentCategory() {
-      // default to 'all' if no query
       return this.$route.query.category ? this.$route.query.category.toLowerCase() : 'all';
+    },
+  },
+  methods: {
+    toggleFilter() {
+      this.$emit('toggle-filter');
     },
   },
 };
 </script>
 
-
 <style scoped>
+/* DESKTOP STYLES */
 .header {
-    position: sticky;    /* stick below main navbar */
-    top: 60px;           /* main navbar height */
+    position: sticky;
+    top: 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -53,7 +81,7 @@ export default {
     padding: 0 2rem;
     font-family: Playfair-Display;
     font-size: 18px;
-    z-index: 1;          /* below filter sidebar */
+    z-index: 1;
     border-radius: 0 0 18px 18px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
@@ -62,6 +90,20 @@ export default {
     font-weight: bold;
     color: #fff;
     font-family: FontInter;
+}
+
+.mobile-top-bar {
+    display: none;
+}
+
+.menu-toggle-mobile {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 0;
 }
 
 .center-container {
@@ -103,78 +145,159 @@ export default {
     left: 0;
 }
 
-@media(max-width:800px){
-    .introText {
-        display: none; /* instead of visibility:hidden */
-    }
+.filter-btn-mobile {
+    display: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    gap: 0.5rem;
+    align-items: center;
+    font-family: FontInter;
 }
 
-/* ---------------------- SHOPNAVBAR MOBILE ---------------------- */
+.filter-btn-mobile:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
 
-/* Tablets & small screens: 800px and below */
+.filter-btn-mobile.active {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---------------------- MOBILE: 800px and below ---------------------- */
 @media (max-width: 800px) {
-  /* Hide introText and remove its layout space */
   .introText {
     display: none;
   }
 
-  /* Stack header vertically */
   .header {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     height: auto;
-    padding: 0.5rem 1rem;
-    position: absolute; /* keep it sticky below main navbar */
-    top: 0;
-    left: 0;
+    padding: 0.5rem;
+    position: sticky;
+    top: 60px;
     width: 100%;
-    padding-bottom: 20px;
+    gap: 0.5rem;
+    z-index: 10;
+    border-radius: 0;
   }
 
-  /* Center the nav links */
+  /* Show mobile top bar with toggle and filter */
+  .mobile-top-bar {
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .menu-toggle-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    font-size: 1.2rem;
+  }
+
+  /* Filter button in top bar */
+  .filter-btn-mobile {
+    display: flex !important;
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  /* Collapsible menu container */
   .center-container {
     width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
   }
 
-  /* Wrap nav links and adjust spacing */
+  .center-container.show {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  /* Nav links stack vertically */
   .nav-links {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    display: flex;
+    justify-content: stretch;
   }
 
-  /* Make links smaller and more compact */
   .nav-links a {
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
-    padding: 0.25rem 0.5rem;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+  }
+
+  .nav-links a::after {
+    display: none;
+  }
+
+  .nav-links a.active {
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 
-/* Medium mobile: 640px and below */
+/* ---------------------- SMALLER MOBILE: 640px and below ---------------------- */
 @media (max-width: 640px) {
-  .nav-links {
+  .mobile-top-bar {
     gap: 0.4rem;
   }
 
+  .filter-btn-mobile {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .menu-toggle-mobile {
+    font-size: 1.1rem;
+  }
+
   .nav-links a {
-    font-size: clamp(0.85rem, 2.2vw, 0.95rem);
-    padding: 0.25rem 0.4rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
-/* Extra small mobile: 480px and below */
+/* ---------------------- EXTRA SMALL MOBILE: 480px and below ---------------------- */
 @media (max-width: 480px) {
-  .nav-links {
+  .header {
+    padding: 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .mobile-top-bar {
     gap: 0.3rem;
-    justify-content: center;
+  }
+
+  .filter-btn-mobile {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .menu-toggle-mobile {
+    font-size: 1rem;
   }
 
   .nav-links a {
-    font-size: 0.8rem;
-    padding: 0.2rem 0.3rem;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
   }
 }
-
 </style>

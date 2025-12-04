@@ -503,8 +503,7 @@ export default {
 
 /* the scroll nav */
 .subnav {
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 30;
     background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
     backdrop-filter: blur(6px);
@@ -536,6 +535,221 @@ export default {
 
 .subnav a:hover {
     background: var(--blue-100);
+}
+
+@media (max-width: 768px) {
+    .subnav {
+        display: none;
+    }
+
+    .hero {
+        padding: 30px 0;
+    }
+
+    .hero__wrap {
+        padding: 0;
+        gap: 16px;
+    }
+
+    .hero__text {
+        order: 1;
+    }
+
+    .hero h1 {
+        font-size: clamp(24px, 6vw, 32px);
+        margin: 0 0 12px;
+    }
+
+    .lead {
+        font-size: 0.95rem;
+        margin: 0 0 12px;
+        line-height: 1.5;
+    }
+
+    .hero__badges {
+        gap: 6px;
+        margin: 10px 0 16px;
+    }
+
+    .hero__badges li {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .hero__cta {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .hero__media {
+        display: none;
+    }
+
+    .section {
+        padding: 24px 0;
+    }
+
+    .section h2 {
+        font-size: clamp(20px, 5vw, 28px);
+        margin: 0 0 16px;
+    }
+
+    .mv__wrap {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .mv__labels {
+        gap: 8px;
+    }
+
+    .mv__pill {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .mv__card {
+        padding: 16px;
+    }
+
+    .mv__card h3 {
+        font-size: 1.2rem;
+        margin: 0 0 12px;
+    }
+
+    .mv__card p {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .stats__grid {
+        gap: 12px;
+    }
+
+    .stat {
+        padding: 16px 12px;
+    }
+
+    .stat__num {
+        font-size: 24px;
+    }
+
+    .stat__label {
+        font-size: 0.85rem;
+    }
+
+    .timeline-section {
+        padding: 24px 12px;
+    }
+
+    .timeline-section h2 {
+        font-size: clamp(20px, 5vw, 28px);
+        margin: 0 0 16px;
+    }
+
+    .timeline-container {
+        gap: 20px;
+    }
+
+    .timeline-item {
+        min-width: 150px;
+        padding: 16px;
+        font-size: 0.9rem;
+    }
+
+    .two-col,
+    .two-col--rev {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .two-col h3,
+    .two-col--rev h3 {
+        font-size: 1.2rem;
+        margin: 0 0 12px;
+    }
+
+    .two-col p,
+    .two-col--rev p {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .feature {
+        padding: 16px;
+    }
+
+    .feature h4 {
+        font-size: 1rem;
+        margin: 0 0 8px;
+    }
+
+    .team {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .team__card {
+        padding: 16px;
+    }
+
+    .team__card h4 {
+        font-size: 1rem;
+        margin: 0 0 4px;
+    }
+
+    .team__card p {
+        font-size: 0.85rem;
+    }
+
+    .cta__actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cta__actions button {
+        width: 100%;
+        padding: 12px;
+        font-size: 0.95rem;
+    }
+
+    .timeline {
+        padding: 0;
+    }
+
+    .timeline li {
+        padding-left: 30px;
+        margin-bottom: 12px;
+    }
+
+    .timeline::before {
+        left: 10px;
+    }
+
+    .timeline .dot {
+        left: 2px;
+        width: 14px;
+        height: 14px;
+    }
+
+    .timecard {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    .ticks {
+        padding-left: 0;
+    }
+
+    .ticks li {
+        padding-left: 20px;
+        font-size: 0.95rem;
+    }
 }
 
 /* Timeline */
@@ -576,9 +790,9 @@ export default {
 
 /*Hero  */
 .hero {
-
     background: linear-gradient(180deg, var(--blue-100), #f9fbff 60%);
     overflow: clip;
+    padding: 10px 0;
 }
 
 .hero__wrap {

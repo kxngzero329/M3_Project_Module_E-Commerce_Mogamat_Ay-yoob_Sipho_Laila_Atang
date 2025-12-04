@@ -1,13 +1,12 @@
 <template>
   <transition name="fade-slide" appear>
     <div class="shop">
-      <!-- Replaced <body> with div -->
       <div class="shop-content">
         <nav>
-          <ShopNavBar />
+          <ShopNavBar :isFilterOpen="isFilterOpen" @toggle-filter="toggleFilter" />
         </nav>
 
-        <aside id="filterside" :class="{ show: isFilterOpen }" class="PageTargetter">
+        <aside id="filterside" :class="{ show: isFilterOpen }">
           <ShopFilterBar category="All" />
         </aside>
 
@@ -29,7 +28,6 @@
   </transition>
 </template>
 
-
 <script>
 import ShopNavBar from "../components/ShopNavBar.vue";
 import ShopProdCard from "@/components/ShopProdCard.vue";
@@ -50,7 +48,8 @@ export default {
     return {
       selectedProduct: null,
       loading: false,
-      showLoader: false, // controls loader DOM presence
+      showLoader: false,
+      isFilterOpen: false,
     };
   },
 
@@ -63,6 +62,10 @@ export default {
 
   methods: {
     ...mapActions(["addToCart", "loadCategoryProducts"]),
+
+    toggleFilter() {
+      this.isFilterOpen = !this.isFilterOpen;
+    },
 
     openProductModal(product) {
       this.selectedProduct = product;
@@ -98,7 +101,7 @@ export default {
       this.showLoader = true;
       this.loading = true;
 
-      const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 500)); // minimum loader visible
+      const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 500));
       const loadProducts = this.loadCategoryProducts(
         (this.$route.query.category || "All").charAt(0).toUpperCase() +
         (this.$route.query.category || "All").slice(1)
@@ -108,14 +111,11 @@ export default {
 
       this.scrollToTop();
 
-      // Fade out loader
       this.loading = false;
 
-      // Wait for fade-out animation to finish before removing loader from DOM
       setTimeout(() => {
         this.showLoader = false;
 
-        // Animate product cards
         this.$nextTick(() => {
           const cards = document.querySelectorAll(".ProductCardView > *");
           cards.forEach((card, index) => {
@@ -184,11 +184,10 @@ export default {
 };
 </script>
 
-
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
-/* Fade slide animation */
+/* Animations */
 .fade-slide-enter-active {
   transition: all 0.8s ease;
 }
@@ -217,7 +216,7 @@ export default {
   transform: translateY(30px);
 }
 
-/* Loader fade-in/out */
+/* Loader */
 .loader-container {
   display: flex;
   justify-content: center;
@@ -244,7 +243,6 @@ export default {
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -254,7 +252,6 @@ export default {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -264,19 +261,12 @@ export default {
   from {
     opacity: 1;
   }
-
   to {
     opacity: 0;
   }
 }
 
-/* ProductCardView animation handled via JS, you could also do CSS transition */
-.ProductCardView>* {
-  will-change: transform, opacity;
-}
-
-
-/* sho */
+/* Layout */
 * {
   margin: 0;
   padding: 0;
@@ -287,55 +277,31 @@ export default {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 250px 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   grid-template-areas:
+    "navbar navbar"
     "navbar navbar"
     "sidebar main";
 }
 
 nav {
-  top: 0;
   grid-area: navbar;
   position: sticky;
-  z-index: 1;
+  top: 0;
+  z-index: 11;
 }
 
 aside {
-  height: calc(100dvh - 60px);
-  top: 60px;
+  height: calc(100dvh - 106px);
+  top: 106px;
   position: sticky;
   grid-area: sidebar;
   border-right: none;
   box-shadow: 6px 0 5px 0px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
-}
-
-@media (max-width: 900px) {
-  body {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "navbar"
-      "main";
-  }
-
-  aside {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 250px;
-    height: calc(100dvh - 60px);
-    background: white;
-    transform: translateX(-100%);
-    z-index: 9998;
-  }
-
-  aside.show {
-    transform: translateX(0);
-  }
-
-  .filter-btn-container {
-    display: block;
-  }
+  background: white;
+  padding: 0;
+  overflow-y: auto;
 }
 
 main {
@@ -349,123 +315,97 @@ main {
   align-items: center;
   gap: 40px;
   flex-wrap: wrap;
-
 }
 
-/* ---------------------- MOBILE / TABLET MEDIA QUERIES ---------------------- */
+.ProductCardView > * {
+  will-change: transform, opacity;
+}
 
-/* Tablets: 900px and below */
+/* MOBILE: 900px and below */
 @media (max-width: 900px) {
   .shop-content {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
     grid-template-areas:
+      "navbar"
       "navbar"
       "main";
   }
 
-  aside#filterside {
+  aside {
     position: fixed;
     top: 60px;
     left: 0;
-    width: 220px;
-    height: calc(100vh - 60px);
+    width: 250px;
+    height: auto;
+    max-height: calc(100dvh - 60px);
+    background: white;
     transform: translateX(-100%);
-    z-index: 9998;
-    border-radius: 12px;
+    z-index: 5;
+    border-radius: 0;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    grid-area: unset;
   }
 
-  aside#filterside.show {
+  aside.show {
     transform: translateX(0);
   }
 
-  main {
-    padding: 10px;
-  }
-
   .ProductCardView {
     justify-content: center;
     gap: 20px;
-  }
-
-  /* Navbar adjustments */
-  .header {
-    flex-direction: column;
-    height: auto;
-    padding: 0.5rem 1rem;
-    text-align: center;
-  }
-
-  .nav-links {
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
   }
 }
 
-/* Mobile: 640px and below */
-@media (max-width: 640px) {
+/* Tablet: 768px and below */
+@media (max-width: 768px) {
+  aside {
+    width: 200px;
+    top: 60px;
+  }
+
   .ProductCardView {
-    padding-top: 30px;
+    padding-top: 10px;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
   }
 
-  .ProdCard {
-    width: 90%;
-    max-width: 250px;
-    height: auto;
+  main {
+    padding: 10px 8px;
+  }
+}
+
+/* Small mobile: 640px and below */
+@media (max-width: 640px) {
+  aside {
+    width: 180px;
+    top: 60px;
   }
 
-  .imgWrapper {
-    height: 200px;
+  .ProductCardView {
+    padding-top: 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
   }
 
-  .view-button {
-    width: 80%;
-    font-size: 0.9rem;
-    padding: 0.5rem 0;
-  }
-
-  .filterBar {
-    padding-top: 1rem;
-    gap: 0.75rem;
-  }
-
-  .filterHead h3 {
-    font-size: 1rem;
-  }
-
-  .filterBar h4 {
-    font-size: 0.9rem;
-  }
-
-  /* Sidebar tweaks */
-  aside#filterside {
-    width: 200px;
+  main {
+    padding: 10px 8px;
   }
 }
 
 /* Extra small mobile: 480px and below */
 @media (max-width: 480px) {
-  .nav-links {
-    gap: 0.5rem;
+  aside {
+    width: 160px;
+    top: 60px;
   }
 
-  .ProdCard {
-    width: 95%;
-  }
-
-  .imgWrapper {
-    height: 180px;
-  }
-
-  .view-button {
-    width: 90%;
+  main {
+    padding: 8px 5px;
   }
 }
-
-
 
 @font-face {
   font-family: FontInter;
